@@ -2,17 +2,19 @@ using Microsoft.AspNetCore.Identity;
 
 public class UserEntity : IdentityUser
 {
-    ICollection<Folder> Folders { get; set; }
-    ICollection<FileEntity> Files { get; set; } 
+   public ICollection<Folder> Folders { get; set; }
+    public ICollection<FileEntity> Files { get; set; } 
 
     public UserEntity()
     {
         Folders = [];
         Files = [];
     }
-    public UserEntity( string username, string email, string password) : base(username)
+    public UserEntity( string username, string email) : base(username)
     {
-        
+        Email = email;
+         Folders = [];
+        Files = [];
     }
 
 }
