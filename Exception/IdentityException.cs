@@ -1,11 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 
-public class IdentityException : Exception
-{
-    public IEnumerable<IdentityError> Errors { get; init; }
+public class IdentityException(string message) : Exception(message) { }
 
-    public IdentityException(IdentityResult result)
-    {
-        this.Errors = result.Errors;
-    }
-}
+public class DateErrorException(string message) : Exception(message);

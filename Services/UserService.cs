@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 public interface IUserService
 {
-    public Task<UserEntity> GetUserByIdAsync(string UserId);
+    public Task<UserEntity?> GetUserByIdAsync(string UserId);
     public Task<UserEntity> RegisterUserAsync(RegisterUserRequest request);
     public Task<UserEntity> LoginUser(SignInUserRequest request);
 }
@@ -18,14 +18,17 @@ public class UserService : IUserService
         this.userManager = userManager;
         this.signInManager = signInManager;
     }
-    public Task<UserEntity> GetUserByIdAsync(string UserId)
+    public async Task<UserEntity?> GetUserByIdAsync(string UserId)
     {
-        throw new NotImplementedException();
+       var user = userManager.FindByIdAsync(UserId);
+       return await user;
     }
 
-    public Task<UserEntity> LoginUser(SignInUserRequest request)
+    public async Task<UserEntity> LoginUser(SignInUserRequest request)
     {
-        throw new NotImplementedException();
+        var loggedInUser = await userManager.FindByNameAsync(request.Username) ??
+        throw new IdentityException("Invalid Username");
+
     }
 
     public async Task<UserEntity> RegisterUserAsync(RegisterUserRequest request)
