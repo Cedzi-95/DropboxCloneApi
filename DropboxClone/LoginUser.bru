@@ -1,0 +1,20 @@
+meta {
+  name: LoginUser
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:5070/user/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "john_doe",
+    "email": "john.doe@example.com",
+    "password": "SecurePassword123!",
+    "createdAt": "2023-11-15T14:30:00Z"
+  }
+}

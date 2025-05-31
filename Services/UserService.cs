@@ -1,11 +1,14 @@
 using System.Security.Principal;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 public interface IUserService
 {
     public Task<UserEntity?> GetUserByIdAsync(string UserId);
-    public Task<UserEntity> RegisterUserAsync(RegisterUserRequest request);
-    public Task<SignInUserResponse> LoginUser(SignInUserRequest request);
+    public Task<RegisterUserResponse> RegisterUserAsync(RegisterUserRequest request);
+    public Task<SignInUserResponse> LoginUserAsync(SignInUserRequest request);
+    public  Task<IEnumerable<UserEntity>> GetAllAsync();
+    public Task<UserEntity?> DeleteAsync(string entityId);
 }
 
 public class UserService : IUserService
@@ -20,15 +23,20 @@ public class UserService : IUserService
     }
     public async Task<UserEntity?> GetUserByIdAsync(string UserId)
     {
-       var user = userManager.FindByIdAsync(UserId);
-       return await user;
+        var user = userManager.FindByIdAsync(UserId);
+        return await user;
     }
 
-    public async Task<SignInUserResponse> LoginUser(SignInUserRequest request)
+    public async Task<IEnumerable<UserEntity>> GetAllAsync()
     {
-         var user =
-            await userManager.FindByNameAsync(request.Username)
-            ?? throw new IdentityException("Invalid username");
+        return await userManager.Users.ToListAsync();
+    }
+
+    public async Task<SignInUserResponse> LoginUserAsync(SignInUserRequest request)
+    {
+        var user =
+           await userManager.FindByNameAsync(request.Username)
+           ?? throw new IdentityException("Invalid username");
 
         var result = await signInManager.PasswordSignInAsync(
             request.Username,
@@ -45,8 +53,14 @@ public class UserService : IUserService
 
     }
 
-    public async Task<UserEntity> RegisterUserAsync(RegisterUserRequest request)
+    public async Task<RegisterUserResponse> RegisterUserAsync(RegisterUserRequest request)
     {
+        if (await userManager.FindByNameAsync(request.Username) != null)
+            throw new IdentityException("Username already exists");
+
+        if (await userManager.FindByEmailAsync(request.Email) != null)
+            throw new IdentityException("Email already registered");
+
         var user = new UserEntity()
         {
             UserName = request.Username,
@@ -58,7 +72,25 @@ public class UserService : IUserService
             var errorMessages = string.Join("; ", result.Errors.Select(e => e.Description));
             throw new IdentityException($"Error while creating user: {errorMessages}");
         }
-        return user;
+        return new RegisterUserResponse
+        {
+            Id = user.Id,
+            Username = user.UserName,
+            Email = user.Email,
+        };
+
     }
 
+    public async Task<UserEntity?> DeleteAsync(string entityId)
+    {
+        var user = await userManager.FindByIdAsync(entityId.ToString());
+        if (user == null)
+            return null;
+
+        var result = await userManager.DeleteAsync(user);
+        if (result.Succeeded)
+            return null;
+
+        throw new IdentityException($"Unable to delete {user.UserName}");
+    }
 }

@@ -1,0 +1,19 @@
+meta {
+  name: Get users
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:5070/user/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "john_doe",
+    "password": "SecurePassword123!"
+    
+  }
+}

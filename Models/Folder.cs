@@ -4,9 +4,10 @@ public class Folder
 {
     public required int Id { get; set; }
     public required string Name { get; set; }
-    ICollection<FileEntity> Files { get; set; } = new List<FileEntity>();
-    public required string UserId { get; set; }
+    public ICollection<FileEntity> Files { get; set; } = new List<FileEntity>();
+    public required Guid UserId { get; set; }
     [ForeignKey("UserId")]
-    public required UserEntity User { get; set; }
+    public UserEntity? CreatedBy { get; set; }
+
     
 }
