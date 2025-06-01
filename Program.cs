@@ -24,34 +24,39 @@ public class Program
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
+
         builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IFolderService, FolderService>();
+        builder.Services.AddScoped<IFileService, FileService>();
+        builder.Services.AddScoped<IRepository<FileEntity>, FileRepository>();
+        builder.Services.AddScoped<IRepository<Folder>, FolderRepository>();
 
-         
 
-        // Add services to the container.
+
+        builder.Services.AddAuthentication();
         builder.Services.AddAuthorization();
 
-         builder.Services.AddCors(options =>
-        {
-            options.AddPolicy(
-                "AllowAll",
-                builder =>
-                {
-                    builder
-                        .WithOrigins("http://localhost:5173")
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials();
-                }
-            );
-        });
+        builder.Services.AddCors(options =>
+       {
+           options.AddPolicy(
+               "AllowAll",
+               builder =>
+               {
+                   builder
+                       .WithOrigins("http://localhost:5173")
+                       .AllowAnyMethod()
+                       .AllowAnyHeader()
+                       .AllowCredentials();
+               }
+           );
+       });
 
-       
+
         var app = builder.Build();
 
         app.MapControllers();
 
-         await CreateDefaultRoles(app);
+        await CreateDefaultRoles(app);
         await CreateAdminAccount(app);
 
         if (app.Environment.IsDevelopment())
@@ -64,12 +69,12 @@ public class Program
 
 
 
-       
+
 
         app.Run();
     }
 
-     static async Task CreateDefaultRoles(WebApplication app)
+    static async Task CreateDefaultRoles(WebApplication app)
     {
         using var scope = app.Services.CreateAsyncScope();
 
