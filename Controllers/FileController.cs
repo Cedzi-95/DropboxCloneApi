@@ -17,7 +17,7 @@ public class FileController : ControllerBase
     }
 
     [HttpPost("create")]
-   // [Authorize]
+    // [Authorize]
     public async Task<IActionResult> CreateFileAsync([FromBody] CreateFileDto createFileDto)
     {
         try
@@ -39,16 +39,28 @@ public class FileController : ControllerBase
                 CreatedAt = fileEntity.CreatedAt,
                 UserId = fileEntity.UserId,
                 CreatedByUsername = User.Identity?.Name ?? "Unknown",
-                 FolderId = fileEntity.FolderId,
-                 DownloadUrl = $"/api/files/{fileEntity.Id}/download"
+                FolderId = fileEntity.FolderId,
+                DownloadUrl = $"/api/files/{fileEntity.Id}/download"
 
             };
-            return CreatedAtAction(nameof(CreateFileAsync), new { id = fileEntity.Id }, response);
+          return Created($"/file/{fileEntity.Id}", response);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating file");
             return StatusCode(500, "An error occurred while creating the file");
         }
+    }
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetFileByIdAsync(int id)
+    {
+
+        var file = await _fileService.GetFileByIdAsync(id);
+        if (file == null)
+        {
+            return NotFound($"File with ID {id} not found");
+        }
+        return Ok(file);
+
     }
 }

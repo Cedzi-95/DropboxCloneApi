@@ -6,7 +6,7 @@ public interface IFileService
     public Task<FileEntity> CreateFileAsync(Guid userId, CreateFileDto uploadFile);
     public Task<FileEntity> EditFileAsync(int fileId, UpdateFileDto editFile, Guid userId);
     public Task<FileEntity> DeleteFileAsync(int fileId, Guid userId);
-    public Task<IEnumerable<FileEntity>> GetFilesByIdAsync(Guid userId);
+    public Task<FileEntity?> GetFileByIdAsync(int fileId);
     public Task<IEnumerable<FileEntity>> GetFilesByFolderAsync(int folderId, Guid userId);
     public Task<IEnumerable<FileEntity>> SearchFilesAsync(string searchTerm, Guid userId);
     public Task<byte[]> GetFileContentAsync(int fileId, Guid userId);// Get file content for download

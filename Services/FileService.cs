@@ -76,9 +76,9 @@ public class FileService : IFileService
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<FileEntity>> GetFilesByIdAsync(Guid userId)
+    public async Task<FileEntity?> GetFileByIdAsync(int fileId)
     {
-        throw new NotImplementedException();
+        return await _fileRepository.GetByIdAsync(fileId);
     }
 
     public Task<long> GetUserTotalFileSizeAsync(Guid userId)
