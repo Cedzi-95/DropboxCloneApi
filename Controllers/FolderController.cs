@@ -19,36 +19,72 @@ public class FolderController : ControllerBase
     {
         try
         {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (!Guid.TryParse(userIdClaim, out Guid userId))
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId))
+            {
+                return Unauthorized("Invalid user token");
+            }
+
+            var folder = await _folderService.CreateFolderAsync(userId, createFolderDto);
+
+            // Map to response DTO
+            var response = new FolderResponse
+            {
+                Id = folder.Id,
+                Name = folder.Name,
+                FileCount = folder.Files?.Count ?? 0,
+                UserId = folder.UserId,
+                CreatedByUsername = folder.CreatedBy?.UserName ?? "Unknown", // Adjust property name as needed
+                CreatedAt = folder.CreatedAt
+            };
+
+            return Created($"/folder/{folder.Id}", response);
+        }
+        catch (UnauthorizedAccessException ex)
         {
-            return Unauthorized("Invalid user token");
+            return Unauthorized(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating folder");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId))
+            {
+                return Unauthorized("Invalid user token");
+            }
+            var folder = await _folderService.GetFolderByIdAsync(id, userId);
+            if (folder == null)
+            {
+                return NotFound("Folder not found");
+            }
+
+            var deletedFolder = await _folderService.DeleteFolderAsync(id, folder.UserId);
+            return Ok(new { message = "Folder deleted successfully!", folder = deletedFolder });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting folder");
+            return StatusCode(500, "An error occurred while deleting the folder");
         }
 
-        var folder = await _folderService.CreateFolderAsync(userId, createFolderDto);
-        
-        // Map to response DTO
-        var response = new FolderResponse
-        {
-            Id = folder.Id,
-            Name = folder.Name,
-            FileCount = folder.Files?.Count ?? 0,
-            UserId = folder.UserId,
-            CreatedByUsername = folder.CreatedBy?.UserName?? "Unknown", // Adjust property name as needed
-            CreatedAt = folder.CreatedAt
-        };
 
-         return Created($"/folder/{folder.Id}", response);
-    }
-    catch (UnauthorizedAccessException ex)
-    {
-        return Unauthorized(ex.Message);
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "Error creating folder");
-        return StatusCode(500, "Internal server error");
-    }
     }
 
 }

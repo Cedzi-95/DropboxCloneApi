@@ -1,0 +1,24 @@
+meta {
+  name: get content
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://localhost:5070/file/3
+  body: json
+  auth: inherit
+}
+
+headers {
+  : 
+}
+
+body:json {
+  {
+    "name": "cedric.txt",
+    "content": "SGVsbG8gV29ybGQh",  
+    "contentType": "text/plain",
+    "folderId": 1
+  }
+}

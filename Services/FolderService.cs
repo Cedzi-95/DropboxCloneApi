@@ -35,27 +35,44 @@ public class FolderService : IFolderService
             UserId = userId,
             CreatedBy = user
         };
-        
+
         await _folderRepository.CreateAsync(folder);
 
         return folder;
 
     }
 
-    public Task<Folder> DeleteFolderAsync(int folderId, Guid userId)
+    public async Task<Folder> DeleteFolderAsync(int folderId, Guid userId)
     {
-        throw new NotImplementedException();
+        var user = await _userService.GetUserByIdAsync(userId.ToString());
+        if (user == null)
+        {
+            throw new UnauthorizedAccessException("User not found");
+        }
+        var folder = await _folderRepository.GetByIdAsync(folderId);
+        if (folder == null)
+        {
+            throw new ArgumentException("Folder not found");
+        }
+        await _folderRepository.DeleteAsync(folder);
+        return folder;
     }
 
-    public Task<Folder?> GetFolderByIdAsync(int folderId, Guid userId)
+    public async Task<Folder?> GetFolderByIdAsync(int folderId, Guid userId)
     {
-        throw new NotImplementedException();
+         var folder = await _folderRepository.GetByIdAsync(folderId);
+         return folder;
     }
 
     public Task<int> GetFolderFileCountAsync(int folderId, Guid userId)
     {
         throw new NotImplementedException();
     }
+
+    // public Task<int> GetFolderFileCountAsync(int folderId, Guid userId)
+    // {
+    //     throw new NotImplementedException();
+    // }
 
     public Task<long> GetFolderTotalSizeAsync(int folderId, Guid userId)
     {

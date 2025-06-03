@@ -1,4 +1,6 @@
 
+using Microsoft.AspNetCore.Http.HttpResults;
+
 public class FileService : IFileService
 {
      private readonly IRepository<FileEntity> _fileRepository; 
@@ -51,9 +53,20 @@ public class FileService : IFileService
 
     }
 
-    public Task<FileEntity> DeleteFileAsync(int fileId, Guid userId)
+    public async Task<FileEntity> DeleteFileAsync(int fileId, Guid userId)
     {
-        throw new NotImplementedException();
+       var file = await _fileRepository.GetByIdAsync(fileId);
+       if (file == null)
+       {
+        throw new ArgumentException("File not found");
+       }
+       var user = await _userService.GetUserByIdAsync(userId.ToString());
+       if (user == null)
+       {
+        throw new UnauthorizedAccessException("User not found or there is no access to the file");
+       }
+       await _fileRepository.DeleteAsync(file);
+       return file;
     }
 
     public Task<FileEntity> EditFileAsync(int fileId, UpdateFileDto editFile, Guid userId)

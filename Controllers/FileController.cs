@@ -43,7 +43,7 @@ public class FileController : ControllerBase
                 DownloadUrl = $"/api/files/{fileEntity.Id}/download"
 
             };
-          return Created($"/file/{fileEntity.Id}", response);
+            return Created($"/file/{fileEntity.Id}", response);
         }
         catch (Exception ex)
         {
@@ -61,6 +61,41 @@ public class FileController : ControllerBase
             return NotFound($"File with ID {id} not found");
         }
         return Ok(file);
+
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        try
+        {
+            var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (user == null || !Guid.TryParse(user, out var userId))
+            {
+                return Unauthorized("Invalid or missing user ID");
+            }
+
+            var file = await _fileService.GetFileByIdAsync(id);
+            if (file == null)
+            {
+                return NotFound($"File with ID {id} not found");
+            }
+            var deletedFile = await _fileService.DeleteFileAsync(id, userId);
+            return Ok(new { message = "File deleted successfully!", file = deletedFile });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting folder");
+            return StatusCode(500, "An error occurred while deleting the folder");
+        }
 
     }
 }

@@ -68,7 +68,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetAllUsersAsync(string id)
+    public async Task<IActionResult> GetUserByIdAsync(string id)
     {
         var result = await _userService.GetUserByIdAsync(id);
         if (result == null)
@@ -113,7 +113,6 @@ public class RegisterUserRequest
     public required string Username { get; set; }
     public required string Email { get; set; }
     public required string Password { get; set; }
-    public DateTime CreatedAt { get; set; }
 }
 
 public class RegisterUserResponse 

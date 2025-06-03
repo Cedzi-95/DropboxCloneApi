@@ -1,0 +1,19 @@
+meta {
+  name: Get all
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://localhost:5070/user/019725f0-595e-7c64-a08f-dc8203887830
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "john_doe",
+    "password": "SecurePassword123!"
+    
+  }
+}
