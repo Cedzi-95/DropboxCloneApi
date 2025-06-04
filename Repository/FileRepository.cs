@@ -1,6 +1,18 @@
 using Microsoft.EntityFrameworkCore;
+public interface IFileRepository : IRepository<FileEntity>
+{
 
-public class FileRepository : EfRepository<FileEntity>
+    public  Task<IEnumerable<FileEntity>> GetFilesByUserIdAsync(Guid userId);
+    public  Task<IEnumerable<FileEntity>> GetFilesByFolderIdAsync(int folderId);
+    public  Task<IEnumerable<FileEntity>> GetFilesByUserAndFolderAsync(Guid userId, int folderId);
+    public  Task<IEnumerable<FileEntity>> SearchFilesByNameAsync(string searchTerm, Guid userId);
+     public  Task<long> GetTotalFileSizeByUserAsync(Guid userId);
+     public Task<byte[]> GetFileContentAsync(int fileId);
+     public Task<string> GetFileNameAsync();
+
+}
+
+public class FileRepository : EfRepository<FileEntity>, IFileRepository
 {
     public FileRepository(AppDbContext context) : base(context)
     {
@@ -48,5 +60,19 @@ public class FileRepository : EfRepository<FileEntity>
             .SumAsync(f => f.Content.Length);
     }
 
-    
+    public async Task<byte[]> GetFileContentAsync(int fileId)
+    {
+       return await _context.Set<FileEntity>()
+       .Where(f => f.Id == fileId)
+       .Select(f => f.Content)
+       .FirstOrDefaultAsync() ?? throw new FileNotFoundException($"File with ID {fileId} not found.");
+       
+    }
+
+    public async Task<string> GetFileNameAsync()
+    {
+       return await _context.Set<FileEntity>()
+       .Select(f => f.Name)
+       .FirstOrDefaultAsync() ?? throw new FileNotFoundException("File not found");
+    }
 }

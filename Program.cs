@@ -28,12 +28,14 @@ public class Program
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IFolderService, FolderService>();
         builder.Services.AddScoped<IFileService, FileService>();
-        builder.Services.AddScoped<IRepository<FileEntity>, FileRepository>();
+        builder.Services.AddScoped<IFileRepository, FileRepository>();
+        builder.Services.AddScoped<IRepository<FileEntity>>(sp => sp.GetRequiredService<IFileRepository>());
+
         builder.Services.AddScoped<IRepository<Folder>, FolderRepository>();
 
 
 
-        builder.Services.AddAuthentication();
+        builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
         builder.Services.AddAuthorization();
 
         builder.Services.AddCors(options =>

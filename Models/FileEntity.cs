@@ -17,11 +17,22 @@ public class FileEntity
    
 }
 
+public class FileDto
+{
+    public int Id { get; set; }
+    public required string Name { get; set; }
+    public required string ContentType { get; set; }
+    public long Size { get; set; }
+    public required DateTime CreatedAt { get; set; }
+    public required Guid UserId { get; set; }
+    public int FolderId { get; set; }
+    public string? DownloadUrl { get; set; }
+}
 
 public class CreateFileDto
 {
     public required string Name { get; set; }
-    public required string Content { get; set; }
+    public required string ByteContent { get; set; }
     public required string ContentType { get; set; }
     public required int FolderId { get; set; }
 }

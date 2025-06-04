@@ -1,0 +1,24 @@
+meta {
+  name: Delete file
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:5070/api/files/5/download
+  body: json
+  auth: inherit
+}
+
+headers {
+  : 
+}
+
+body:json {
+  {
+    "name": "cedric.txt",
+    "content": "SGVsbG8gV29ybGQh",  
+    "contentType": "text/plain",
+    "folderId": 1
+  }
+}

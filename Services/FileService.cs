@@ -3,17 +3,18 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 public class FileService : IFileService
 {
-     private readonly IRepository<FileEntity> _fileRepository; 
+    //  private readonly IRepository<FileEntity> _fileRepository; 
+    private readonly IFileRepository _fileRepository;
     private readonly IUserService _userService;
     private readonly IRepository<Folder> _folderRepository;
 
-    public FileService(IRepository<FileEntity> fileRepository,
+    public FileService(IFileRepository fileRepository,
      IUserService userService,
       IRepository<Folder> folderRepository)
     {
         _fileRepository = fileRepository;
         _userService = userService;
-       _folderRepository = folderRepository;
+        _folderRepository = folderRepository;
     }
 
     public async Task<FileEntity> CreateFileAsync(Guid userId, CreateFileDto uploadFile)
@@ -28,10 +29,10 @@ public class FileService : IFileService
         {
             throw new ArgumentException("Folder not found or access denied");
         }
-         // Validate Base64 content
+        // Validate Base64 content
         try
         {
-            var contentBytes = Convert.FromBase64String(uploadFile.Content);
+            var contentBytes = Convert.FromBase64String(uploadFile.ByteContent);
         }
         catch (FormatException)
         {
@@ -41,9 +42,9 @@ public class FileService : IFileService
         var fileEntity = new FileEntity
         {
             Name = uploadFile.Name,
-            Content = Convert.FromBase64String(uploadFile.Content), // Convert back to byte[]
+            Content = Convert.FromBase64String(uploadFile.ByteContent), // Convert back to byte[]
             ContentType = uploadFile.ContentType,
-            Size = uploadFile.Content.Length,
+            Size = uploadFile.ByteContent.Length,
             CreatedAt = DateTime.UtcNow,
             UserId = user.Id,
             FolderId = uploadFile.FolderId
@@ -55,18 +56,18 @@ public class FileService : IFileService
 
     public async Task<FileEntity> DeleteFileAsync(int fileId, Guid userId)
     {
-       var file = await _fileRepository.GetByIdAsync(fileId);
-       if (file == null)
-       {
-        throw new ArgumentException("File not found");
-       }
-       var user = await _userService.GetUserByIdAsync(userId.ToString());
-       if (user == null)
-       {
-        throw new UnauthorizedAccessException("User not found or there is no access to the file");
-       }
-       await _fileRepository.DeleteAsync(file);
-       return file;
+        var file = await _fileRepository.GetByIdAsync(fileId);
+        if (file == null)
+        {
+            throw new ArgumentException("File not found");
+        }
+        var user = await _userService.GetUserByIdAsync(userId.ToString());
+        if (user == null)
+        {
+            throw new UnauthorizedAccessException("User not found or there is no access to the file");
+        }
+        await _fileRepository.DeleteAsync(file);
+        return file;
     }
 
     public Task<FileEntity> EditFileAsync(int fileId, UpdateFileDto editFile, Guid userId)
@@ -74,19 +75,25 @@ public class FileService : IFileService
         throw new NotImplementedException();
     }
 
-    public Task<byte[]> GetFileContentAsync(int fileId, Guid userId)
+    public async Task<byte[]> GetFileContentAsync(int fileId, Guid userId)
+    {
+       var content = await _fileRepository.GetFileContentAsync(fileId);
+       return content;
+    }
+
+    public  Task<IEnumerable<FileEntity>> GetFilesByContentTypeAsync(string contentType, Guid userId)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<FileEntity>> GetFilesByContentTypeAsync(string contentType, Guid userId)
+    public async Task<IEnumerable<FileEntity>> GetFilesByFolderAsync(int folderId, Guid userId)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<FileEntity>> GetFilesByFolderAsync(int folderId, Guid userId)
-    {
-        throw new NotImplementedException();
+        var files = await _fileRepository.GetFilesByFolderIdAsync(folderId);
+        if (files == null)
+        {
+            throw new ArgumentException("No files were found.");
+        }
+        return files;
     }
 
     public async Task<FileEntity?> GetFileByIdAsync(int fileId)
@@ -108,4 +115,11 @@ public class FileService : IFileService
     {
         throw new NotImplementedException();
     }
+
+    public async Task<string> GetFileNameAsync(int fileId, Guid userId)
+    {
+       return await _fileRepository.GetFileNameAsync();
+    }
+    
+    
 }

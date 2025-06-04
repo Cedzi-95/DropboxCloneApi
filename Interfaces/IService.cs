@@ -13,6 +13,7 @@ public interface IFileService
     public Task<long> GetUserTotalFileSizeAsync(Guid userId);     // Get total storage used by user
     public Task MoveFileToFolderAsync(int fileId, int newFolderId, Guid userId);
     public Task<IEnumerable<FileEntity>> GetFilesByContentTypeAsync(string contentType, Guid userId);
+    public Task<string> GetFileNameAsync(int fileId, Guid userId);
 
 
 
@@ -33,4 +34,5 @@ public interface IFolderService
     public Task<long> GetFolderTotalSizeAsync(int folderId, Guid userId);
     public Task<bool> CanDeleteFolderAsync(int folderId, Guid userId);
     public Task<Folder> GetFolderWithFilesAsync(int folderId, Guid userId);
+     public Task<IEnumerable<Folder>> GetAllFoldersAsync();
 }

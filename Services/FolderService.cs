@@ -64,6 +64,11 @@ public class FolderService : IFolderService
          return folder;
     }
 
+    public async Task<IEnumerable<Folder>> GetAllFoldersAsync()
+    {
+        return await _folderRepository.GetAllAsync();
+    }
+
     public Task<int> GetFolderFileCountAsync(int folderId, Guid userId)
     {
         throw new NotImplementedException();

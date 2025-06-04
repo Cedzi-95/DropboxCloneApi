@@ -1,0 +1,24 @@
+meta {
+  name: Downloaded file
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://localhost:5070/file/folder/4
+  body: json
+  auth: inherit
+}
+
+headers {
+  : 
+}
+
+body:json {
+  {
+    "name": "cedric.txt",
+    "content": "SGVsbG8gV29ybGQh",  
+    "contentType": "text/plain",
+    "folderId": 1
+  }
+}

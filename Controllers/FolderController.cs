@@ -87,4 +87,34 @@ public class FolderController : ControllerBase
 
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetFoldersById(int id)
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId))
+            {
+                return Unauthorized("Invalid user token");
+            }
+            var folder = await _folderService.GetFolderByIdAsync(id, userId);
+            if (folder == null)
+            {
+                return NotFound("Folder not found");
+            }
+            return Ok(folder);
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException(ex.Message);
+        }
+
+    }
+
+     [HttpGet("all")]
+    public async Task<IActionResult> getAllFoldersAsync()
+    {
+       var folders = await _folderService.GetAllFoldersAsync();
+        return Ok(folders);
+    }
 }

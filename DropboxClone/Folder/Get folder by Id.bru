@@ -1,0 +1,17 @@
+meta {
+  name: Get folder by Id
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:5070/folder/4
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "Name":"school folder"
+  }
+}
