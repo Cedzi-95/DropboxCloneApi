@@ -14,47 +14,48 @@ public class UserController : ControllerBase
         this._logger = logger;
     }
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
-    {
-       try
-        {
-            var result = await _userService.RegisterUserAsync(request);
-            return Ok(new { UserId = result.Id, Message = "Registration successful" });
-        }
-        catch (IdentityException ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error during user registration");
-            return StatusCode(500, new { Message = "An unexpected error occurred. Please try again later." });
-        }
-    }
+    // [HttpPost("register")]
+    // public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
+    // {
+    //    try
+    //     {
+    //         var result = await _userService.RegisterUserAsync(request);
+    //         return Ok(new { UserId = result.Id, Message = "Registration successful" });
+    //     }
+    //     catch (IdentityException ex)
+    //     {
+    //         return BadRequest(new { Message = ex.Message });
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "Error during user registration");
+    //         return StatusCode(500, new { Message = "An unexpected error occurred. Please try again later." });
+    //     }
+    // }
 
-    [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] SignInUserRequest request)
-    {
-        try
-        {
-            var result = await _userService.LoginUserAsync(request);
-            return Ok(result);
-        }
-        catch (ArgumentException)
-        {
-            return BadRequest( new { errors = "User not found"});
-        }
+    // [HttpPost("login")]
+    // public async Task<IActionResult> Login([FromBody] SignInUserRequest request)
+    // {
+    //     try
+    //     {
+    //         var result = await _userService.LoginUserAsync(request);
+    //         return Ok(result);
+    //     }
+    //     catch (ArgumentException)
+    //     {
+    //         return BadRequest( new { errors = "User not found"});
+    //     }
 
-        catch (IdentityException ex)
-        {
-            return Unauthorized(new { errors = ex.Message });
-        }
-        catch
-        {
-            return StatusCode(500, new { errors = "An unexpected error occured." });
-        }
-    }
+    //     catch (IdentityException ex)
+    //     {
+    //         return Unauthorized(new { errors = ex.Message });
+    //     }
+    //     catch
+    //     {
+    //         return StatusCode(500, new { errors = "An unexpected error occured." });
+    //     }
+    // }
+    
 
     [HttpGet]
     public async Task<IActionResult> GetAllUsersAsync()
@@ -100,7 +101,7 @@ public class UserController : ControllerBase
 
 public class SignInUserRequest
 {
-    public required string Username {get; set;}
+    public required string Email {get; set;}
     public required string Password { get; set; }
 }
 

@@ -51,6 +51,8 @@ public class FileController : ControllerBase
             return StatusCode(500, "An error occurred while creating the file");
         }
     }
+    
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetFileByIdAsync(int id)
     {
@@ -64,7 +66,8 @@ public class FileController : ControllerBase
 
     }
 
-    [HttpDelete("{id}")]
+[Authorize]
+    [HttpDelete("{id}")] 
     public async Task<IActionResult> Delete(int id)
     {
         try
@@ -100,6 +103,7 @@ public class FileController : ControllerBase
     }
 
     [HttpGet("folder/{folderId}")]
+    [Authorize]
     public async Task<IActionResult> GetFilesByFolderId(int folderId)
     {
         var user = User.FindFirstValue(ClaimTypes.NameIdentifier);

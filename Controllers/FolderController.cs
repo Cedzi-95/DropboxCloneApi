@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
@@ -13,7 +14,8 @@ public class FolderController : ControllerBase
         _folderService = folderService;
         _logger = logger;
     }
-
+    
+    [Authorize]
     [HttpPost("create")]
     public async Task<IActionResult> CreateFolderAsync([FromBody] CreateFolderDto createFolderDto)
     {
@@ -51,6 +53,7 @@ public class FolderController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -87,6 +90,7 @@ public class FolderController : ControllerBase
 
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetFoldersById(int id)
     {
@@ -110,7 +114,7 @@ public class FolderController : ControllerBase
         }
 
     }
-
+    [Authorize]
      [HttpGet("all")]
     public async Task<IActionResult> getAllFoldersAsync()
     {

@@ -32,27 +32,27 @@ public class UserService : IUserService
         return await userManager.Users.ToListAsync();
     }
 
-    public async Task<SignInUserResponse> LoginUserAsync(SignInUserRequest request)
+    
+public async Task<SignInUserResponse> LoginUserAsync(SignInUserRequest request)
+{
+    // Change from FindByNameAsync to FindByEmailAsync
+    var user = await userManager.FindByEmailAsync(request.Email)
+        ?? throw new IdentityException("Invalid email");
+
+    // Use email instead of username for sign-in
+    var result = await signInManager.PasswordSignInAsync(
+        user.UserName,  // Use the found user's username
+        request.Password,
+        false,
+        false
+    );
+
+    if (result.Succeeded)
     {
-        var user =
-           await userManager.FindByNameAsync(request.Username)
-           ?? throw new IdentityException("Invalid username");
-
-        var result = await signInManager.PasswordSignInAsync(
-            request.Username,
-            request.Password,
-            false,
-            false
-        );
-
-        if (result.Succeeded)
-        {
-            return new SignInUserResponse { Id = user.Id, Username = user.UserName! };
-        }
-        throw new IdentityException($"Invalid username or password");
-
+        return new SignInUserResponse { Id = user.Id, Username = user.UserName! };
     }
-
+    throw new IdentityException($"Invalid email or password");
+}
     public async Task<RegisterUserResponse> RegisterUserAsync(RegisterUserRequest request)
     {
         if (await userManager.FindByNameAsync(request.Username) != null)
