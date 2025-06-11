@@ -41,7 +41,7 @@ public async Task<SignInUserResponse> LoginUserAsync(SignInUserRequest request)
 
     // Use email instead of username for sign-in
     var result = await signInManager.PasswordSignInAsync(
-        user.UserName,  // Use the found user's username
+        user.UserName!,  // Use the found user's username
         request.Password,
         false,
         false

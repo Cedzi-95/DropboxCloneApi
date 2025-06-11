@@ -1,6 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+public interface IFolderRepository : IRepository<Folder>
+{
+     public  Task<IEnumerable<Folder>> GetFoldersByUserIdAsync(Guid userId);
+     public  Task<Folder?> GetFolderWithFilesAsync(int folderId);
+     public  Task<bool> UserOwnsFolderAsync(int folderId, Guid userId);
+    public  Task<IEnumerable<Folder>> SearchFoldersByNameAsync(string searchTerm, Guid userId);
+}
 
-public class FolderRepository : EfRepository<Folder>
+public class FolderRepository : EfRepository<Folder>, IFolderRepository
 {
     public FolderRepository(AppDbContext context) : base(context)
     {

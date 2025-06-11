@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 public class FolderService : IFolderService
 {
-    private readonly IRepository<Folder> _folderRepository;
+    private readonly IFolderRepository _folderRepository;
     private readonly IUserService _userService;
     private readonly IFileService _fileService;
 
-    public FolderService(IRepository<Folder> folderRepository,
+    public FolderService(IFolderRepository folderRepository,
      IUserService userService,
       IFileService fileService)
     {
@@ -74,10 +74,6 @@ public class FolderService : IFolderService
         throw new NotImplementedException();
     }
 
-    // public Task<int> GetFolderFileCountAsync(int folderId, Guid userId)
-    // {
-    //     throw new NotImplementedException();
-    // }
 
     public Task<long> GetFolderTotalSizeAsync(int folderId, Guid userId)
     {
