@@ -34,5 +34,5 @@ public interface IFolderService
     public Task<long> GetFolderTotalSizeAsync(int folderId, Guid userId);
     public Task<bool> CanDeleteFolderAsync(int folderId, Guid userId);
     public Task<Folder> GetFolderWithFilesAsync(int folderId, Guid userId);
-     public Task<IEnumerable<Folder>> GetAllFoldersAsync();
+     public Task<IEnumerable<Folder>> GetAllFoldersAsync(Guid userId);
 }

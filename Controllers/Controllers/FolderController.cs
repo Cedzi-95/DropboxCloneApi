@@ -15,6 +15,7 @@ public class FolderController : ControllerBase
         _logger = logger;
     }
     
+    
     [Authorize]
     [HttpPost("create")]
     public async Task<IActionResult> CreateFolderAsync([FromBody] CreateFolderDto createFolderDto)
@@ -116,9 +117,33 @@ public class FolderController : ControllerBase
     }
     [Authorize]
      [HttpGet("all")]
-    public async Task<IActionResult> getAllFoldersAsync()
+    public async Task<IActionResult> GetAllFoldersAsync()
     {
-       var folders = await _folderService.GetAllFoldersAsync();
-        return Ok(folders);
+        try
+        {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId))
+            {
+                return Unauthorized("Invalid user token");
+            }
+
+       var folders = await _folderService.GetAllFoldersAsync(userId);
+         // Map to response DTOs
+        var response = folders.Select(f => new FolderResponse
+        {
+            Id = f.Id,
+            Name = f.Name,
+            FileCount = f.Files?.Count ?? 0,
+            UserId = f.UserId,
+            CreatedByUsername = f.CreatedBy?.UserName ?? "Unknown",
+            CreatedAt = f.CreatedAt
+        }).ToList();
+
+        return Ok(response);
+        }
+        catch(Exception ex)
+        {
+            throw new ArgumentException(ex.Message);
+        }
     }
 }

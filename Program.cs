@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -10,10 +11,14 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllers()
+         .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
         
-        // Use the newer OpenAPI approach (like your working app)
-        builder.Services.AddOpenApi();  // Instead of AddSwaggerGen()
+        builder.Services.AddOpenApi();  
 
         builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -28,6 +33,7 @@ public class Program
             options.Password.RequiredLength = 6;
         });
 
+
         // Your scoped services...
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IFolderService, FolderService>();
@@ -37,10 +43,23 @@ public class Program
         builder.Services.AddScoped<IFolderRepository, FolderRepository>();
         builder.Services.AddScoped<IRepository<Folder>>(sp => sp.GetRequiredService<IFolderRepository>());
 
+
         builder.Services.AddAuthorization();
 
-        var app = builder.Build();
+        builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.WithOrigins("http://localhost:5173") // Vite default port
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials();
+    });
+});
 
+        var app = builder.Build();
+        
+        app.UseCors();
         app.UseAuthentication();
         app.UseAuthorization();
 
