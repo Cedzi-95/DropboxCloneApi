@@ -1,6 +1,6 @@
 class ApiService {
     constructor(){
-        this.baseURL = 'https://localhost:5070';
+        this.baseURL = 'http://localhost:5070';
         this.token = localStorage.getItem('authToken');
     }
 
@@ -22,7 +22,7 @@ class ApiService {
         const config = {
             headers: {
                 'Content-Type': 'application/json',
-                ...ApiService(this.token && { Authorization: `Bearer ${this.token}`}),
+                ...(this.token && { Authorization: `Bearer ${this.token}`}),
                 ...options.headers,
             },
             ...options,
@@ -32,7 +32,7 @@ class ApiService {
 
             if (!response.ok) {
                 const errorData = await response.text();
-                throw new error(`HTTP ${response.status}: ${errorData}`);
+                throw new Error(`HTTP ${response.status}: ${errorData}`);
             }
 
             //Handle empty repssonses
@@ -107,6 +107,8 @@ class ApiService {
         }
         return response.blob();
     }
+
+    
 }
 
 export default new ApiService();
