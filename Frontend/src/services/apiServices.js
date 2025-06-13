@@ -48,5 +48,65 @@ class ApiService {
     }
 
     //Folder API methods
+    async createFolder(folderData){
+        return this.request('/folder/create' , {
+            method : 'POST',
+            body: JSON.stringify(folderData),
+        });
+    }
+    async getAllFolders() {
+        return this.request('/folder/all');
+    }
+
+    async getFolderById(id) {
+        return this.request(`/folder/${id}`);
+    }
+
+    async deleteFolder(id) {
+        return this.request(`/folder/${id}`, {
+            method : 'DELETE',
+        });
+    }
+
+    //File api methods
+    async createFile(fileData) {
+        return this.request('/file/create', {
+            method : 'POST',
+            body : JSON.stringify(fileData),
+        });
+    }
+
+    async getFileById(id) {
+        return this.request(`/file/${id}`);
+      }
     
+      async deleteFile(id) {
+        return this.request(`/file/${id}`, {
+          method: 'DELETE',
+        });
+      }
+    
+      async getFilesByFolder(folderId) {
+        return this.request(`/file/folder/${folderId}`);
+      }
+    
+      async getFileContent(fileId) {
+        return this.request(`/file/content/${fileId}`);
+      }
+    async downloadFile(fileId) {
+        const url = `${this.baseURL}/file/download/${fileId}`;
+
+        const response = await fetch(url, {
+            headers: {
+                ...(this.token && { Authorization: `Bearer ${this.token}`}),
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Download failed: ${response.statusText}`);
+        }
+        return response.blob();
+    }
 }
+
+export default new ApiService();
