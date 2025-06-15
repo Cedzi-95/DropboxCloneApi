@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import apiServices from "../services/apiServices";
+import ApiServices from "../services/apiServices";
 
 //Generic hook for API calls
 export const useApi = (apiCall, dependencies = []) => {
@@ -34,13 +34,14 @@ export const useFolders = () => {
     const [error, setError] = useState(null);
 
     const fetchFolders = async () => {
-        try{
+        try {
             setLoading(true);
             setError(null);
-            const data = await apiServices.getAllFolders();
-            setFolders(data);
+            const data = await ApiServices.getAllFolders();
+            setFolders(Array.isArray(data) ? data : []);
         } catch (err) {
             setError(err.message);
+            setFolders([]); 
         } finally {
             setLoading(false);
         }
@@ -48,8 +49,9 @@ export const useFolders = () => {
 
     const createFolder = async (folderData) => {
         try {
-            const newFolder = await apiServices.createFolder(folderData);
-            setFolders(prev => [...prev, newFolder]);
+            const newFolder = await ApiServices.createFolder(folderData);
+            setFolders(prev => Array.isArray(prev) ? [...prev, newFolder] : [newFolder]);
+
             return newFolder;
         } catch (err) {
             setError(err.message);
@@ -59,7 +61,7 @@ export const useFolders = () => {
 
     const deleteFolder = async (id) => {
         try {
-            await apiServices.deleteFolder(id);
+            await ApiServices.deleteFolder(id);
             setFolders(prev => prev.filter(folder => folder.id !== id));
         } catch (err) {
             setError(err.message)
@@ -93,10 +95,11 @@ export const useFiles = (folderId) => {
       try {
         setLoading(true);
         setError(null);
-        const data = await apiService.getFilesByFolder(folderId);
-        setFiles(data);
+        const data = await ApiServices.getFilesByFolder(folderId);
+        setFiles(Array.isArray(data) ? data : []);
       } catch (err) {
         setError(err.message);
+        setFiles([]);
       } finally {
         setLoading(false);
       }
@@ -104,7 +107,7 @@ export const useFiles = (folderId) => {
   
     const createFile = async (fileData) => {
       try {
-        const newFile = await apiService.createFile(fileData);
+        const newFile = await ApiServices.createFile(fileData);
         setFiles(prev => [...prev, newFile]);
         return newFile;
       } catch (err) {
@@ -115,7 +118,7 @@ export const useFiles = (folderId) => {
   
     const deleteFile = async (id) => {
       try {
-        await apiService.deleteFile(id);
+        await ApiServices.deleteFile(id);
         setFiles(prev => prev.filter(file => file.id !== id));
       } catch (err) {
         setError(err.message);

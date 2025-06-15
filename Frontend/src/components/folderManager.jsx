@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useFolders } from '../hooks/useApi';
 
+
 const FolderManager = ({ onFolderSelect }) => {
   const { folders, loading, error, createFolder, deleteFolder } = useFolders();
   const [showCreateForm, setShowCreateForm] = useState(false);

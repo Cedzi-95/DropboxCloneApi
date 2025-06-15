@@ -1,4 +1,4 @@
-class ApiService {
+class ApiServices {
     constructor(){
         this.baseURL = 'http://localhost:5070';
         this.token = localStorage.getItem('authToken');
@@ -111,4 +111,4 @@ class ApiService {
     
 }
 
-export default new ApiService();
+export default new ApiServices();

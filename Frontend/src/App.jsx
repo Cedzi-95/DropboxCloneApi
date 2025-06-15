@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import FolderManager from './components/folderManager';
 import FileManager from './components/fileManager';
-import apiService from './services/apiServices';
+import ApiServices from './services/apiServices';
 import './App.css';
 
 function App() {
@@ -21,7 +21,7 @@ function App() {
             const token = prompt('Enter your auth token:');
             if (token) {
               setAuthToken(token);
-              apiService.setAuthToken(token);
+              ApiService.setAuthToken(token);
               localStorage.setItem('authToken', token);
             }
           }}
@@ -33,8 +33,8 @@ function App() {
   }
 
   // Set the token in apiService when component mounts
-  if (authToken && !apiService.token) {
-    apiService.setAuthToken(authToken);
+  if (authToken && !ApiServices.token) {
+    ApiServices.setAuthToken(authToken);
   }
 
   const handleFolderSelect = (folder) => {
@@ -49,7 +49,7 @@ function App() {
           className="btn-secondary"
           onClick={() => {
             setAuthToken(null);
-            apiService.removeAuthToken();
+            ApiServices.removeAuthToken();
             localStorage.removeItem('authToken');
           }}
         >

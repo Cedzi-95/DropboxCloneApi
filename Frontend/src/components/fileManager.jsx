@@ -1,7 +1,7 @@
 // src/components/FileManager.jsx
 import React, { useState } from 'react';
 import { useFiles } from '../hooks/useApi';
-import apiService from '../services/apiServices';
+import ApiServices from '../services/apiServices';
 
 const FileManager = ({ folderId, folderName }) => {
   const { files, loading, error, createFile, deleteFile } = useFiles(folderId);
@@ -46,7 +46,7 @@ const FileManager = ({ folderId, folderName }) => {
 
   const handleDownloadFile = async (fileId, fileName) => {
     try {
-      const blob = await apiService.downloadFile(fileId);
+      const blob = await ApiServices.downloadFile(fileId);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
